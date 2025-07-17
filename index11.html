@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Video Redirect</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./assets/targets .mind; autoStart: true"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true"
+    embedded
+  >
+    <a-assets>
+      <img id="marker" src="./assets/targets .jpg" />
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0" id="tracker">
+      <!-- Optional: Plane preview for debug -->
+   <!--  <a-plane src="#marker" position="0 0 0" width="1" height="0.6"></a-plane>-->
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const tracker = document.querySelector("#tracker");
+
+    tracker.addEventListener("targetFound", () => {
+      console.log("Image detected!");
+      // Redirect after short delay
+      setTimeout(() => {
+        window.location.href = "https://www.youtube.com/shorts/vBjUy9q34SM"; // Replace with your video link
+      }, 1500); // 1.5 second delay after detection
+    });
+  </script>
+
+</body>
+</html>
