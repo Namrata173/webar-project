@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Video Redirect</title>
+  <title>MindAR Video Overlay</title>
+
+  <!-- A-Frame and MindAR libraries -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <style>
     html, body {
       margin: 0;
@@ -13,7 +16,6 @@
       height: 100%;
       overflow: hidden;
     }
-
     a-scene {
       width: 100vw;
       height: 100vh;
@@ -23,8 +25,8 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind; autoStart: true"
     color-space="sRGB"
@@ -33,28 +35,62 @@
     device-orientation-permission-ui="enabled: true"
     embedded
   >
+    <!-- Preload assets -->
     <a-assets>
+      <!-- Your marker image -->
       <img id="marker" src="./assets/targets.jpg" />
+
+      <!-- Video element -->
+      <video
+        id="myVideo"
+        src="./assets/video.mp4"
+        preload="auto"
+        loop
+        crossorigin="anonymous"
+        playsinline
+        webkit-playsinline
+        muted
+      ></video>
     </a-assets>
 
+    <!-- AR camera -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+    <!-- The tracked image -->
     <a-entity mindar-image-target="targetIndex: 0" id="tracker">
-      <!-- Optional: Plane preview for debug -->
-      <a-plane src="#marker" position="0 0 0" width="1" height="0.6"></a-plane>
+      <!-- Video plane -->
+      <a-video
+        src="#myVideo"
+        width="1"
+        height="0.6"
+        position="0 0 0"
+        rotation="0 0 0"
+        autoplay="true"
+        loop="true"
+        visible="false"
+        id="videoPlane"
+      ></a-video>
     </a-entity>
   </a-scene>
 
   <script>
+    const video = document.querySelector("#myVideo");
+    const plane = document.querySelector("#videoPlane");
     const tracker = document.querySelector("#tracker");
 
+    // Play video when image is found
     tracker.addEventListener("targetFound", () => {
-      console.log("Image detected!");
-      setTimeout(() => {
-        window.location.href = "https://www.youtube.com/shorts/vBjUy9q34SM";
-      }, 1500);
+      console.log("Target found");
+      video.play();
+      plane.setAttribute("visible", "true");
+    });
+
+    // Pause and hide when image is lost
+    tracker.addEventListener("targetLost", () => {
+      console.log("Target lost");
+      video.pause();
+      plane.setAttribute("visible", "false");
     });
   </script>
-
 </body>
 </html>
